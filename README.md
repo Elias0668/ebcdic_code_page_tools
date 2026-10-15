@@ -16,3 +16,10 @@ Mainframe flat files and record-oriented data often arrive as raw EBCDIC bytes. 
 ## The awkward edge
 
 Several EBCDIC byte positions have no assigned graphic character in CP037. On `decode`, those bytes become `U+FFFD` (the Unicode replacement character). On `encode`, `U+FFFD` raises `KeyError` rather than silently emitting a byte. This means undefined bytes are lossy: you can see that they were undefined, but you cannot round-trip them. That is deliberate — there is no correct byte to produce.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
